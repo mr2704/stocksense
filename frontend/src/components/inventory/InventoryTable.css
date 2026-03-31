@@ -1,0 +1,119 @@
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.inventory-table th {
+  padding: 16px;
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.inventory-table td {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  vertical-align: middle;
+}
+
+.inventory-table tr {
+  transition: var(--transition-fast);
+}
+
+.inventory-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.product-sku {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+.category-pill {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+}
+
+.stock-count {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-badge.danger {
+  background: var(--status-danger-bg);
+  color: var(--status-danger);
+}
+
+.status-badge.warning {
+  background: var(--status-warning-bg);
+  color: var(--status-warning);
+}
+
+.status-badge.success {
+  background: var(--status-success-bg);
+  color: var(--status-success);
+}
+
+.restock-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.restock-amount {
+  font-weight: 600;
+  color: var(--accent-blue);
+}
+
+.restock-cost {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+.btn-order {
+  padding: 6px 14px;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-blue);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--border-radius-sm);
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: var(--transition-fast);
+}
+
+.btn-order:hover {
+  background: var(--accent-blue);
+  color: white;
+}

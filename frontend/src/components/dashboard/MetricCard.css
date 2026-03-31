@@ -1,0 +1,79 @@
+.metric-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: var(--transition-normal);
+  border-top: 3px solid transparent;
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+}
+
+.border-blue { border-top-color: var(--accent-blue); }
+.border-danger { border-top-color: var(--status-danger); }
+.border-success { border-top-color: var(--status-success); }
+.border-warning { border-top-color: var(--status-warning); }
+
+.bg-blue-subtle { background: rgba(59, 130, 246, 0.1); }
+.bg-danger-subtle { background: var(--status-danger-bg); }
+.bg-success-subtle { background: var(--status-success-bg); }
+.bg-warning-subtle { background: var(--status-warning-bg); }
+
+.text-blue { color: var(--accent-blue); }
+.text-danger { color: var(--status-danger); }
+.text-success { color: var(--status-success); }
+.text-warning { color: var(--status-warning); }
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metric-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-body {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.metric-trend {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.trend-up {
+  color: var(--status-success);
+  background: var(--status-success-bg);
+}
+
+.trend-down {
+  color: var(--status-danger);
+  background: var(--status-danger-bg);
+}
