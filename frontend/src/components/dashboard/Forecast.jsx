@@ -25,8 +25,30 @@ function Forecast() {
   // Intelligence calculations
   const firstValue = chartData[0].demand;
   const lastValue = chartData[chartData.length - 1].demand;
-  const trend = lastValue >= firstValue ? "up" : "down";
-  const trendColor = trend === "up" ? "#00f5d4" : "#ff4d4f";
+  
+  let percentChange = 0;
+  if (firstValue !== 0) {
+    percentChange = ((lastValue - firstValue) / firstValue) * 100;
+  } else if (lastValue !== 0) {
+    percentChange = 100;
+  }
+
+  let trendStr = "increasing";
+  let trendColor = "#10b981"; // Green by default
+
+  if (percentChange > 2) {
+    trendStr = "increasing";
+    trendColor = "#10b981"; // Green
+  } else if (percentChange >= -5 && percentChange <= 2) {
+    trendStr = "constant";
+    trendColor = "#3b82f6"; // Blue
+  } else if (percentChange > -15 && percentChange < -5) {
+    trendStr = "decreasing normally";
+    trendColor = "#f97316"; // Orange
+  } else {
+    trendStr = "decreasing drastically";
+    trendColor = "#ef4444"; // Red
+  }
   
   const sum = chartData.reduce((acc, val) => acc + val.demand, 0);
   const avgDemandRaw = sum / chartData.length;
@@ -39,7 +61,7 @@ function Forecast() {
   const safetyStock = 10;
   const reorderQty = Math.ceil(avgDemandRaw * leadTime + safetyStock);
   
-  const insightText = `Demand is ${trend === "up" ? "increasing" : "decreasing"}. Average demand is ${avgDemandRaw.toFixed(2)} units/day. Recommended reorder quantity is ${reorderQty} units.`;
+  const insightText = `Demand is ${trendStr}. Average demand is ${avgDemandRaw.toFixed(2)} units/day. Recommended reorder quantity is ${reorderQty} units.`;
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>

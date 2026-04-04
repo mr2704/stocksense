@@ -32,7 +32,7 @@
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 20px;
-  height: 400px;
+  min-height: 400px;
 }
 
 .chart-wrapper {

@@ -1,10 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, User, Settings, LogOut, Package } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, Bell, User, Settings, LogOut, Package, AlertTriangle } from 'lucide-react';
+import { useInventory } from '../../context/InventoryContext';
 import './Header.css';
 
 const Header = () => {
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const { inventory } = useInventory();
+  
   const notifRef = useRef(null);
   const profileRef = useRef(null);
 
@@ -21,15 +28,97 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Calculate dynamic notifications
+  const notifications = [];
+  inventory.forEach(item => {
+    if (item.stock === 0) {
+      notifications.push(
+        <div key={`out-${item.id}`} className="dropdown-item unread">
+          <div className="item-icon bg-danger" style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' }}>
+            <AlertTriangle size={14} />
+          </div>
+          <div className="item-content">
+            <p><strong>Out of Stock:</strong> {item.name}</p>
+            <span>Order immediately</span>
+          </div>
+        </div>
+      );
+    } else if (item.avgDemand > 0) {
+      const daysLeft = item.stock / item.avgDemand;
+      if (daysLeft <= 7) {
+        notifications.push(
+          <div key={`low-${item.id}`} className="dropdown-item unread">
+            <div className="item-icon bg-warning">
+              <Bell size={14} />
+            </div>
+            <div className="item-content">
+              <p><strong>Restock Reminder:</strong> {item.name}</p>
+              <span>Runs out in {Math.ceil(daysLeft)} days</span>
+            </div>
+          </div>
+        );
+      }
+    }
+  });
+
+  if (notifications.length === 0) {
+    notifications.push(
+       <div key="none" className="dropdown-item">
+         <div className="item-content" style={{ textAlign: "center", width: "100%" }}>
+           <p style={{ color: "var(--text-secondary)" }}>No alerts at this time.</p>
+         </div>
+       </div>
+    );
+  }
+
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    if (query.trim().length > 0) {
+      const q = query.toLowerCase();
+      const results = inventory.filter(item => 
+        item.name.toLowerCase().includes(q) || 
+        item.id.toLowerCase().includes(q) || 
+        item.category.toLowerCase().includes(q)
+      );
+      setSearchResults(results);
+    } else {
+      setSearchResults([]);
+    }
+  };
+
   return (
     <header className="header glass-panel">
-      <div className="search-container">
+      <div className="search-container" style={{ position: 'relative' }}>
         <Search size={18} className="search-icon" />
         <input 
           type="text" 
           placeholder="Search products, orders, or SKUs..." 
           className="search-input"
+          value={searchQuery}
+          onChange={handleSearch}
         />
+        {searchQuery.trim().length > 0 && (
+           <div className="dropdown-menu search-results-menu animate-fade-in" style={{ position: 'absolute', top: '100%', left: 0, width: '100%', marginTop: '8px', maxHeight: '300px', overflowY: 'auto' }}>
+             {searchResults.length > 0 ? (
+                <div className="dropdown-list">
+                  {searchResults.map(item => (
+                    <div key={item.id} className="dropdown-item" onClick={() => { setSearchQuery(''); navigate('/inventory'); }} style={{ cursor: 'pointer' }}>
+                      <div className="item-icon bg-primary" style={{ flexShrink: 0 }}><Package size={14}/></div>
+                      <div className="item-content">
+                        <p style={{ margin: 0, fontWeight: 500, color: 'var(--text-primary)' }}>{item.name}</p>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>{item.id} • {item.category}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+             ) : (
+                <div style={{ padding: '16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                  No results found for "{searchQuery}"
+                </div>
+             )}
+           </div>
+        )}
       </div>
 
       <div className="header-actions">
@@ -39,37 +128,19 @@ const Header = () => {
             onClick={() => setShowNotifications(!showNotifications)}
           >
             <Bell size={20} />
-            <span className="badge">3</span>
+            {notifications.length > 0 && notifications[0].key !== "none" && (
+                <span className="badge">{notifications.length}</span>
+            )}
           </button>
           
           {showNotifications && (
             <div className="dropdown-menu notifications-menu animate-fade-in">
               <div className="dropdown-header">
                 <h4>Notifications</h4>
-                <button className="text-btn">Mark all as read</button>
+                <button className="text-btn" onClick={() => setShowNotifications(false)}>Dismiss</button>
               </div>
               <div className="dropdown-list">
-                <div className="dropdown-item unread">
-                  <div className="item-icon bg-warning"><Bell size={14} /></div>
-                  <div className="item-content">
-                    <p>Low stock alert: Mechanical Keyboard</p>
-                    <span>2 mins ago</span>
-                  </div>
-                </div>
-                <div className="dropdown-item">
-                  <div className="item-icon bg-success"><Package size={14} /></div>
-                  <div className="item-content">
-                    <p>Shipment received: 50x Smart Trackers</p>
-                    <span>1 hour ago</span>
-                  </div>
-                </div>
-                <div className="dropdown-item">
-                  <div className="item-icon bg-primary"><Bell size={14} /></div>
-                  <div className="item-content">
-                    <p>Weekly report generated</p>
-                    <span>Yesterday</span>
-                  </div>
-                </div>
+                {notifications}
               </div>
             </div>
           )}

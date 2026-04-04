@@ -1,7 +1,9 @@
 import React from 'react';
+import { useInventory } from '../../context/InventoryContext';
 import './InventoryTable.css';
 
 const InventoryTable = ({ data, limits }) => {
+  const { restockItem } = useInventory();
   const displayData = limits ? data.slice(0, limits) : data;
 
   const calculateRestockNeed = (item) => {
@@ -52,11 +54,19 @@ const InventoryTable = ({ data, limits }) => {
                 <td>
                   <div className="restock-info">
                     <span className="restock-amount">+{restockAmount}</span>
-                    <span className="restock-cost">${(restockAmount * item.price).toFixed(2)}</span>
+                    <span className="restock-cost">₹{(restockAmount * item.price).toFixed(2)}</span>
                   </div>
                 </td>
                 <td>
-                  <button className="btn-order">Order</button>
+                  <button 
+                    className="btn-order"
+                    onClick={() => {
+                       const qty = parseInt(prompt(`How many units of ${item.name} would you like to order?`), 10);
+                       if (!isNaN(qty) && qty > 0) restockItem(item.id, qty);
+                    }}
+                  >
+                    Order
+                  </button>
                 </td>
               </tr>
             );

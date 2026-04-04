@@ -16,8 +16,8 @@ const DemandChart = () => {
               <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
             </linearGradient>
             <linearGradient id="colorSupply" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#f97316" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
@@ -57,7 +57,7 @@ const DemandChart = () => {
             type="monotone" 
             dataKey="supply" 
             name="Current Supply"
-            stroke="#10b981" 
+            stroke="#f97316" 
             strokeWidth={3}
             fillOpacity={1} 
             fill="url(#colorSupply)" 

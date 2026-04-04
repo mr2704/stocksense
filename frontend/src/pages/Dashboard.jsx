@@ -4,14 +4,16 @@ import MetricCard from '../components/dashboard/MetricCard';
 import DemandChart from '../components/dashboard/DemandChart';
 import InventoryTable from '../components/inventory/InventoryTable';
 import Forecast from '../components/dashboard/Forecast';
-import { Package, AlertTriangle, TrendingUp, DollarSign, Download } from 'lucide-react';
-import { inventoryData } from '../utils/mockData';
+import { Package, AlertTriangle, TrendingUp, IndianRupee, Download } from 'lucide-react';
+import { useInventory } from '../context/InventoryContext';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const lowStockCount = inventoryData.filter(item => item.stock <= item.reorderPoint).length;
-  const totalStock = inventoryData.reduce((acc, item) => acc + item.stock, 0);
+  const { inventory } = useInventory();
+  
+  const lowStockCount = inventory.filter(item => item.stock <= item.reorderPoint && item.stock > 0).length;
+  const totalStock = inventory.reduce((acc, item) => acc + item.stock, 0);
 
   return (
     <div className="dashboard-container animate-fade-in">
@@ -56,10 +58,10 @@ const Dashboard = () => {
         />
         <MetricCard 
           title="Est. Restock Cost" 
-          value="$12,450" 
+          value="₹12,450" 
           trend="-2%" 
           isPositive={false}
-          icon={<DollarSign size={24} />}
+          icon={<IndianRupee size={24} />}
           color="warning"
         />
       </div>
@@ -97,7 +99,7 @@ const Dashboard = () => {
            <h3 className="section-title">Critical Restock Recommendations</h3>
            <button className="text-btn" onClick={() => navigate('/inventory')}>View All</button>
         </div>
-        <InventoryTable data={inventoryData} limits={5} />
+        <InventoryTable data={inventory} limits={5} />
       </div>
     </div>
   );
