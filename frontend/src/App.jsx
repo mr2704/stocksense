@@ -6,12 +6,16 @@ import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
+import Signup from './pages/Signup';
+import Login from './pages/Login';
 
 function App() {
   return (
     <InventoryProvider>
       <Router>
         <Routes>
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="inventory" element={<Inventory />} />

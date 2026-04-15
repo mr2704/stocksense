@@ -1,0 +1,132 @@
+.signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: var(--bg-primary);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(249, 115, 22, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+.signup-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.signup-header {
+  text-align: center;
+}
+
+.signup-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.logo-icon {
+  font-size: 28px;
+}
+
+.signup-logo h2 {
+  font-size: 24px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+.signup-header h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.signup-header p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-tertiary);
+  font-size: 16px;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 12px 14px 12px 40px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: var(--transition-fast);
+}
+
+.input-wrapper input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+}
+
+.btn-signup {
+  margin-top: 10px;
+  width: 100%;
+  justify-content: center;
+  padding: 12px;
+  font-size: 15px;
+}
+
+.signup-footer {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.login-link {
+  color: var(--accent-blue);
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+
+.login-link:hover {
+  text-decoration: underline;
+  color: var(--accent-indigo);
+}

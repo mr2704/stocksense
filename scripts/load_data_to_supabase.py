@@ -29,4 +29,4 @@ for i in range(0, len(sales_records), 1000):
     batch = sales_records[i:i+1000]
     supabase.table("sales").insert(batch).execute()
 
-print("✅ Data uploaded successfully!")
+print(" Data uploaded successfully!")

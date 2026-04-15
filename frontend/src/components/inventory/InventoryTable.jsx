@@ -27,6 +27,7 @@ const InventoryTable = ({ data, limits }) => {
             <th>Current Stock</th>
             <th>Status</th>
             <th>Avg Demand/Day</th>
+            <th>Unit Price</th>
             <th>Smart Restock</th>
             <th>Action</th>
           </tr>
@@ -51,6 +52,9 @@ const InventoryTable = ({ data, limits }) => {
                 </td>
                 <td>{getStatusBadge(item.stock, item.reorderPoint)}</td>
                 <td>{item.avgDemand} units</td>
+                <td>
+                  <span className="unit-price">₹{item.price.toFixed(2)}</span>
+                </td>
                 <td>
                   <div className="restock-info">
                     <span className="restock-amount">+{restockAmount}</span>
