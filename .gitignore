@@ -3,8 +3,11 @@ __pycache__/
 *.pyc
 .venv/
 
-# Environment variables
+# Environment variables (VERY IMPORTANT)
 .env
+.env.local
+frontend/.env.local
+backend/.env
 
 # Node
 node_modules/
@@ -12,3 +15,4 @@ dist/
 
 # OS
 .DS_Store
+Thumbs.db
