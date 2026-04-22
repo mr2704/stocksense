@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiMail, FiLock, FiUser, FiArrowRight } from 'react-icons/fi';
+import { FiMail, FiLock, FiUser, FiArrowRight, FiAlertCircle } from 'react-icons/fi';
+import { useAuth } from '../context/AuthContext';
 import './Signup.css';
 
 const Signup = () => {
@@ -10,23 +11,38 @@ const Signup = () => {
     password: '',
     confirmPassword: ''
   });
-  
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { signUp } = useAuth();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (error) setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate signup
-    console.log('Signup data:', formData);
-    // You'd typically make an API call to Supabase or your backend here.
-    // Assuming success, redirect to dashboard
-    navigate('/');
+    setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await signUp(formData.email, formData.password, formData.name);
+      navigate('/'); // Redirect to dashboard
+    } catch (err) {
+      setError(err.message || 'Signup failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,6 +56,13 @@ const Signup = () => {
           <h1>Create an Account</h1>
           <p>Join us to start managing your inventory.</p>
         </div>
+
+        {error && (
+          <div className="auth-error">
+            <FiAlertCircle />
+            <span>{error}</span>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="signup-form">
           <div className="form-group">
@@ -106,8 +129,8 @@ const Signup = () => {
             </div>
           </div>
 
-          <button type="submit" className="btn-primary btn-signup">
-            Sign Up <FiArrowRight />
+          <button type="submit" className="btn-primary btn-signup" disabled={loading}>
+            {loading ? 'Creating account…' : (<>Sign Up <FiArrowRight /></>)}
           </button>
         </form>
 

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User, Settings, LogOut, Package, AlertTriangle } from 'lucide-react';
 import { useInventory } from '../../context/InventoryContext';
+import { useAuth } from '../../context/AuthContext';
 import './Header.css';
 
 const Header = () => {
@@ -11,7 +12,12 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const { inventory } = useInventory();
-  
+  const { user, profile, signOut } = useAuth();
+
+  const displayName  = profile?.full_name || user?.email?.split('@')[0] || 'User';
+  const displayEmail = user?.email || '';
+  const displayRole  = profile?.role || 'seller';
+
   const notifRef = useRef(null);
   const profileRef = useRef(null);
 
@@ -155,16 +161,16 @@ const Header = () => {
               <User size={18} />
             </div>
             <div className="user-info">
-              <span className="user-name">Store Admin</span>
-              <span className="user-role">Seller Central</span>
+              <span className="user-name">{displayName}</span>
+              <span className="user-role" style={{ textTransform: 'capitalize' }}>{displayRole}</span>
             </div>
           </div>
           
           {showProfile && (
             <div className="dropdown-menu profile-menu animate-fade-in">
               <div className="profile-header">
-                <strong>Admin User</strong>
-                <span>admin@stocksense.com</span>
+                <strong>{displayName}</strong>
+                <span>{displayEmail}</span>
               </div>
               <div className="dropdown-divider"></div>
               <button className="dropdown-action">
@@ -174,7 +180,10 @@ const Header = () => {
                 <Settings size={16} /> Account Settings
               </button>
               <div className="dropdown-divider"></div>
-              <button className="dropdown-action text-danger">
+              <button
+                className="dropdown-action text-danger"
+                onClick={async () => { await signOut(); navigate('/login'); }}
+              >
                 <LogOut size={16} /> Logout
               </button>
             </div>

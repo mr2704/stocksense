@@ -1,136 +1,124 @@
-import React, { useState } from 'react';
-import InventoryTable from '../components/inventory/InventoryTable';
-import { Package, Plus, Filter, Download } from 'lucide-react';
-import { useInventory } from '../context/InventoryContext';
-import './Inventory.css';
+import React, { useState } from "react";
+import InventoryTable from "../components/inventory/InventoryTable";
+import { useInventory } from "../context/InventoryContext";
 
 const Inventory = () => {
   const { inventory, addProduct } = useInventory();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('All Products');
-  const [sortOption, setSortOption] = useState('default');
-
-  const filteredData = inventory.filter(item => {
-    const searchLower = searchQuery.toLowerCase();
-    const matchesSearch = item.name.toLowerCase().includes(searchLower) ||
-      item.id.toLowerCase().includes(searchLower) ||
-      item.category.toLowerCase().includes(searchLower);
-
-    let matchesTab = true;
-    if (activeTab === 'Low Stock') {
-      matchesTab = item.stock <= item.reorderPoint && item.stock > 0;
-    } else if (activeTab === 'Out of Stock') {
-      matchesTab = item.stock === 0;
-    }
-
-    return matchesSearch && matchesTab;
+  const [showAdd, setShowAdd] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    store_id: 1,
+    product_id: Math.floor(Math.random() * 10000), // Random temp ID for demo
+    product_name: "",
+    category: "",
+    stock: 0,
+    price: 0
   });
-
-  const sortedData = [...filteredData].sort((a, b) => {
-    switch (sortOption) {
-      case 'alpha-asc':
-        return a.name.localeCompare(b.name);
-      case 'alpha-desc':
-        return b.name.localeCompare(a.name);
-      case 'stock-asc':
-        return a.stock - b.stock;
-      case 'stock-desc':
-        return b.stock - a.stock;
-      case 'demand-asc':
-        return a.avgDemand - b.avgDemand;
-      case 'demand-desc':
-        return b.avgDemand - a.avgDemand;
-      default:
-        return 0;
-    }
-  });
-
-  const handleExport = () => {
-    const csvContent = "data:text/csv;charset=utf-8,"
-      + "ID,Name,Category,Stock,Reorder Point,Avg Demand,Price\n"
-      + filteredData.map(e => `${e.id},"${e.name}",${e.category},${e.stock},${e.reorderPoint},${e.avgDemand},${e.price}`).join("\n");
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "inventory_export.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const handleAddProduct = () => {
-    const name = prompt("Enter product model name:");
-    if (!name) return;
-    const id = prompt("Enter product model number or SKU:");
-    if (!id) return;
-
-    const newProduct = {
-      id: id,
-      name: name,
-      category: 'Newly Added',
-      stock: 0,
-      reorderPoint: 10,
-      avgDemand: 1,
-      leadTimeDays: 7,
-      price: 99.99
-    };
+    // Validate
+    if (!newProduct.product_name) return alert("Product name is required");
     addProduct(newProduct);
+    setShowAdd(false);
+    setNewProduct({
+      store_id: 1,
+      product_id: Math.floor(Math.random() * 10000),
+      product_name: "",
+      category: "",
+      stock: 0,
+      price: 0
+    });
   };
 
   return (
-    <div className="inventory-page animate-fade-in">
-      <div className="page-header">
+    <div style={{ padding: "30px", color: "white" }} className="animate-fade-in">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: "20px" }}>
         <div>
           <h1 className="page-title">Inventory Management</h1>
-          <p className="page-subtitle">Manage your stock, track SKUs, and monitor supply levels.</p>
+          <p className="page-subtitle" style={{ marginTop: '8px' }}>
+            Manage your product stock, reorder levels, and track smart recommendations.
+          </p>
         </div>
-        <div className="header-actions-group">
-          <select 
-            className="btn-secondary" 
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-            style={{ cursor: 'pointer', outline: 'none' }}
-          >
-            <option value="default">Sort by...</option>
-            <option value="alpha-asc">Alphabetical (A-Z)</option>
-            <option value="alpha-desc">Alphabetical (Z-A)</option>
-            <option value="stock-asc">Stock (Low to High)</option>
-            <option value="stock-desc">Stock (High to Low)</option>
-            <option value="demand-asc">Demand (Low to High)</option>
-            <option value="demand-desc">Demand (High to Low)</option>
-          </select>
-          <button className="btn-secondary" onClick={handleExport}>
-            <Download size={18} />
-            Export
-          </button>
-          <button className="btn-primary" onClick={handleAddProduct}>
-            <Plus size={18} />
-            Add Product
-          </button>
-        </div>
+        <button 
+          onClick={() => setShowAdd(true)}
+          style={{ background: '#a855f7', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+        >
+          + Add New Product
+        </button>
       </div>
 
-      <div className="inventory-content glass-panel" style={{ padding: '24px', borderRadius: '16px' }}>
-        <div className="content-toolbar">
-          <div className="tab-group">
-            <button className={`tab ${activeTab === 'All Products' ? 'active' : ''}`} onClick={() => setActiveTab('All Products')}>All Products</button>
-            <button className={`tab ${activeTab === 'Low Stock' ? 'active' : ''}`} onClick={() => setActiveTab('Low Stock')}>Low Stock</button>
-            <button className={`tab ${activeTab === 'Out of Stock' ? 'active' : ''}`} onClick={() => setActiveTab('Out of Stock')}>Out of Stock</button>
-          </div>
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="Search by name, SKU or category..."
-              className="search-input"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+      {showAdd && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+          background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)',
+          display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
+        }}>
+          <div style={{
+            background: '#1e1e2e', padding: '30px', borderRadius: '16px', width: '400px', border: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            <h2 style={{ marginBottom: '20px' }}>Add New Product</h2>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', opacity: 0.8 }}>Product Name</label>
+                <input 
+                  type="text" 
+                  value={newProduct.product_name} 
+                  onChange={e => setNewProduct({...newProduct, product_name: e.target.value})}
+                  style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
+                />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', opacity: 0.8 }}>Category</label>
+                <input 
+                  type="text" 
+                  value={newProduct.category} 
+                  onChange={e => setNewProduct({...newProduct, category: e.target.value})}
+                  style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '15px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '5px', opacity: 0.8 }}>Initial Stock</label>
+                  <input 
+                    type="number" 
+                    value={newProduct.stock} 
+                    onChange={e => setNewProduct({...newProduct, stock: parseInt(e.target.value) || 0})}
+                    style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '5px', opacity: 0.8 }}>Unit Price (₹)</label>
+                  <input 
+                    type="number" 
+                    value={newProduct.price} 
+                    onChange={e => setNewProduct({...newProduct, price: parseFloat(e.target.value) || 0})}
+                    style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+                <button 
+                  onClick={() => setShowAdd(false)}
+                  style={{ background: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleAddProduct}
+                  style={{ background: '#3b82f6', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}
+                >
+                  Save Product
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+      )}
 
-        <InventoryTable data={sortedData} />
-      </div>
+      <InventoryTable data={inventory} />
     </div>
   );
 };

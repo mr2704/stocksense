@@ -1,29 +1,29 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiMail, FiLock, FiArrowRight } from 'react-icons/fi';
-import './Signup.css'; // Reusing matching styles from Signup
+import { FiMail, FiLock, FiArrowRight, FiAlertCircle } from 'react-icons/fi';
+import { useAuth } from '../context/AuthContext';
+import './Signup.css'; // reuse same styles
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  
-  const navigate = useNavigate();
+  const [email, setEmail]     = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError]     = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate               = useNavigate();
+  const { signIn }             = useAuth();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate login
-    console.log('Login data:', formData);
-    // You'd typically make an API call here. Assuming success:
-    navigate('/');
+    setError('');
+    setLoading(true);
+    try {
+      await signIn(email, password);
+      navigate('/');
+    } catch (err) {
+      setError(err.message || 'Login failed. Check your credentials.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -35,8 +35,15 @@ const Login = () => {
             <h2>StockSense</h2>
           </div>
           <h1>Welcome Back</h1>
-          <p>Enter your details to access your dashboard.</p>
+          <p>Sign in to manage your inventory.</p>
         </div>
+
+        {error && (
+          <div className="auth-error">
+            <FiAlertCircle />
+            <span>{error}</span>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="signup-form">
           <div className="form-group">
@@ -46,41 +53,36 @@ const Login = () => {
               <input
                 type="email"
                 id="email"
-                name="email"
                 placeholder="you@company.com"
-                value={formData.email}
-                onChange={handleChange}
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); if (error) setError(''); }}
                 required
               />
             </div>
           </div>
 
           <div className="form-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <label htmlFor="password">Password</label>
-              <a href="#" className="forgot-password" style={{ fontSize: '13px', color: 'var(--text-tertiary)', textDecoration: 'none' }}>Forgot password?</a>
-            </div>
+            <label htmlFor="password">Password</label>
             <div className="input-wrapper">
               <FiLock className="input-icon" />
               <input
                 type="password"
                 id="password"
-                name="password"
                 placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); if (error) setError(''); }}
                 required
               />
             </div>
           </div>
 
-          <button type="submit" className="btn-primary btn-signup">
-            Log In <FiArrowRight />
+          <button type="submit" className="btn-primary btn-signup" disabled={loading}>
+            {loading ? 'Signing in…' : (<>Sign In <FiArrowRight /></>)}
           </button>
         </form>
 
         <div className="signup-footer">
-          <p>Don't have an account? <Link to="/signup" className="login-link">Sign up</Link></p>
+          <p>Don't have an account? <Link to="/signup" className="login-link">Create one</Link></p>
         </div>
       </div>
     </div>
